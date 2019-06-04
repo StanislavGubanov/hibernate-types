@@ -10,7 +10,7 @@
 
     <groupId>com.vladmihalcea</groupId>
     <artifactId>hibernate-types-parent</artifactId>
-    <version>2.3.6-SNAPSHOT</version>
+    <version>2.4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Hibernate Types</name>
@@ -277,14 +277,14 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
 
-        <slf4j.version>1.7.6</slf4j.version>
-        <logback.version>1.1.1</logback.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <logback.version>1.2.3</logback.version>
 
         <mockito.version>1.8.5</mockito.version>
         <junit.version>4.8.1</junit.version>
         <hsqldb.version>2.2.8</hsqldb.version>
 
-        <mysql.version>5.1.38</mysql.version>
+        <mysql.version>5.1.47</mysql.version>
 
     </properties>
 

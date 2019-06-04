@@ -27,7 +27,7 @@ public final class ReflectionUtils {
      * Instantiate object
      *
      * @param className Class for object to instantiate
-     * @param <T>       field type
+     * @param <T> field type
      * @return field value
      */
     public static <T> T newInstance(String className) {
@@ -93,10 +93,24 @@ public final class ReflectionUtils {
      * @return return value
      */
     public static Method getMethod(Object target, String methodName, Class... parameterTypes) {
+        return getMethod(target.getClass(), methodName, parameterTypes);
+    }
+
+    public static Method getMethod(Class targetClass, String methodName, Class... parameterTypes) {
         try {
-            return target.getClass().getMethod(methodName, parameterTypes);
+            return targetClass.getDeclaredMethod(methodName, parameterTypes);
         } catch (NoSuchMethodException e) {
-            throw handleException(methodName, e);
+            try {
+                return targetClass.getMethod(methodName, parameterTypes);
+            } catch (NoSuchMethodException ignore) {
+            }
+
+            if(!targetClass.getSuperclass().equals(Object.class)) {
+                return getMethod(targetClass.getSuperclass(), methodName, parameterTypes);
+            }
+            else {
+                throw handleException(methodName, e);
+            }
         }
     }
 
@@ -149,8 +163,10 @@ public final class ReflectionUtils {
     /**
      * Invoke target method
      *
-     * @param method     method to invoke
+     * @param target target object whose method we are invoking
+     * @param method method to invoke
      * @param parameters method parameters
+     * @param <T> return value object type
      * @return return value
      */
     public static <T> T invoke(Object target, Method method, Object... parameters) {
@@ -171,6 +187,8 @@ public final class ReflectionUtils {
      *
      * @param target   target object
      * @param property property
+     * @param <T> return value object type
+     * @return return value
      */
     public static <T> T invokeGetter(Object target, String property) {
         Method setter = getGetter(target, property);
@@ -234,6 +252,42 @@ public final class ReflectionUtils {
             throw handleException(setter.getName(), e);
         } catch (InvocationTargetException e) {
             throw handleException(setter.getName(), e);
+        }
+    }
+
+    /**
+     * Invoke static Class method
+     *
+     * @param method method to invoke
+     * @param parameters method parameters
+     * @param <T> return value object type
+     * @return return value
+     */
+    public static <T> T invokeStatic(Method method, Object... parameters) {
+        try {
+            method.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            T returnValue = (T) method.invoke(null, parameters);
+            return returnValue;
+        } catch (InvocationTargetException e) {
+            throw handleException(method.getName(), e);
+        } catch (IllegalAccessException e) {
+            throw handleException(method.getName(), e);
+        }
+    }
+
+    /**
+     * Invoke setter method with the given parameter
+     *
+     * @param className class name to be retrieved
+     * @param <T> return value object type
+     * @return Java {@link Class} object instance
+     */
+    public static <T> Class<T> getClass(String className) {
+        try {
+            return (Class<T>) Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw handleException(className, e);
         }
     }
 
